@@ -1,33 +1,37 @@
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Swagger configuration
   const config = new DocumentBuilder()
     .setTitle('Step Project API')
-    .setDescription('API documentation for Step Project')
     .setVersion('1.0')
-    .addTag('api')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'JWT',
+        description: 'Введіть JWT токен',
+        in: 'header',
+      },
+      'JWT-auth', 
+    )
     .build();
   
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
+  app.enableCors({
+    origin: 'http://localhost:3001',
+    credentials: true,
+  });
+
+  app.use(cookieParser());
+
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
-
-//Хай це буде застосунок для створення тасок для кожного користувача. Користувач може відновлювати таски зі збережених.
-//Користувачу має приходити сповіщення про те що він має зробити за кілька годин до того як це треба зробити.
-//Користувач має мати змогу авторизовуватись через гугл або гітхаб.
-
-//Робимо ендпоінти для тасок
-//пагінація
-//веб хуки
-//фантомне видалення
-//збереження користувача
-//авторизація через токени
-//auth guard - розібратись

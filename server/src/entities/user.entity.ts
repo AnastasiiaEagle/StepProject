@@ -1,7 +1,8 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { RefreshToken } from './refreshToken.entity';
 
-@Entity('users') // This will be the table name in database
+@Entity('users')
 export class User {
   @ApiProperty({ 
     description: 'User unique identifier',
@@ -11,35 +12,36 @@ export class User {
   id: string;
 
   @ApiProperty({ 
-    description: 'User first name',
-    example: 'John',
-    maxLength: 100
-  })
-  @Column({ length: 100 })
-  firstName: string;
-
-  @ApiProperty({ 
-    description: 'User last name',
-    example: 'Doe',
-    maxLength: 100
-  })
-  @Column({ length: 100 })
-  lastName: string;
-
-  @ApiProperty({ 
     description: 'User email address',
     example: 'john.doe@example.com',
     uniqueItems: true
   })
-  @Column({ unique: true })
-  email: string;
+  @Column({ type: 'varchar', length: 255, unique: true })
+  email: string | null;
 
   @ApiProperty({ 
     description: 'User password',
     example: 'password123'
   })
-  @Column()
-  password: string;
+  @Column({ type: 'varchar', length: 255 })
+  password: string | null;
+
+
+
+  @ApiProperty({ 
+    description: 'User first name',
+    example: 'John',
+    maxLength: 100
+  })
+  @Column({ type: 'varchar', length: 50, unique: true })
+  nickname: string | null;
+
+  @ApiProperty({ 
+    description: 'User avatar',
+    example: 'https://example.com/avatar.png'
+  })
+  @Column({ type: 'text', nullable: true })
+  avatar: string | null;
 
   @ApiProperty({ 
     description: 'Date when user was created',
@@ -54,4 +56,7 @@ export class User {
   })
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @OneToMany(() => RefreshToken, (refreshToken) => refreshToken.user)
+  refreshTokens: RefreshToken[];
 } 

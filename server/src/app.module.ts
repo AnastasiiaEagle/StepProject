@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
+import { User } from './entities/user.entity';
+import { RefreshToken } from './entities/refreshToken.entity';
 
 @Module({
   imports: [
@@ -11,7 +11,9 @@ import { AuthModule } from './auth/auth.module';
       isGlobal: true,
     }),
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
+      imports: [ConfigModule.forRoot({
+        isGlobal: true,
+      })],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
         host: configService.get('DB_HOST'),
@@ -19,14 +21,12 @@ import { AuthModule } from './auth/auth.module';
         username: configService.get('DB_USERNAME'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_DATABASE'),
-        entities: [],
+        entities: [User, RefreshToken], // Додаємо наші entities
         synchronize: true,
       }),
       inject: [ConfigService],
     }),
     AuthModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}
