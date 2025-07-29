@@ -58,7 +58,7 @@ export default function Auth() {
     
     try {
       console.log(`${isLogin ? 'Login' : 'Register'} with:`, formData)
-      console.log(process.env.REACT_APP_API_URL)
+      console.log(process.env.NEXT_PUBLIC_API_URL)
 
       
       if (isLogin) {
